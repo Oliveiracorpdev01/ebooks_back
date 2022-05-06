@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Role;
+use App\Models\UsersRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -14,24 +17,29 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validatedData = $request->validate([
-            'fullName' => 'required|string|max:255',
-            'username' => 'required|string|max:255',
+            'fullName' => 'required| regex:/\s/ | string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'device_name' => 'required',
         ]);
-
+        $username = explode(' ', $validatedData['fullName'])[0];
         $user = User::create([
             'fullName' => $validatedData['fullName'],
             'email' => $validatedData['email'],
-            'username' => $validatedData['username'],
+            'username' => $username,
             'password' => Hash::make($validatedData['password']),
         ]);
+        UsersRole::create([
+            'user_id' => $user->id,
+            'role_id' => 1,
+        ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $user->roles = UsersRole::innerjoinUsersPermissions($user->id);
 
         return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
+            'users' => $user,
+            'token' => $user->createToken($request->device_name)->plainTextToken,
+            'token_type' => 'bearer',
         ]);
 
     }
@@ -52,7 +60,11 @@ class AuthController extends Controller
                 'email' => ['As credenciais fornecidas estão incorretas.'],
             ]);
         }
-        $user->ability = [['action'=>'read', 'subject'=>'ACL'], ['action'=>'read', 'subject'=>'Auth']];
+
+        $user->roles = UsersRole::innerjoinUsersPermissions($user->id);
+
+        $user->createToken($request->device_name);      
+       
         return response()->json([
             'users' => $user,
             'token' => $user->createToken($request->device_name)->plainTextToken,
@@ -61,9 +73,28 @@ class AuthController extends Controller
 
     }
 
-    public function me(Request $request)
+    public function profile(Request $request)
     {
-        return $request->user();
+        /* $post = '';
+        if( Gate::denies('update-post', $post) )
+        abort(403, 'Unauthorized'); */
+
+        $device_name = $request->user()->currentAccessToken()->name;
+        $request->user()->currentAccessToken()->delete();
+
+        $user = $request->user();
+        
+        //$user->roles = UsersRole::innerjoinUsersPermissions($user->id);
+
+        if (!Gate::allows('update-post', 'editar_livro')) {
+            return abort(403);
+        }
+
+        return response()->json([
+            'users' => $user,
+            'token' => $user->createToken($device_name)->plainTextToken,
+            'token_type' => 'bearer',
+        ]);
     }
 
     public function logout()

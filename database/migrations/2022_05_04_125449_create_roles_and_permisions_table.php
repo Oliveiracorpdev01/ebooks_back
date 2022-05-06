@@ -15,48 +15,34 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('fullName');
-            $table->string('username')->unique();
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('avatar')->nullable();
-            $table->string('role')->default('client');
-            $table->rememberToken();
+            $table->string('name', 100);
+            $table->string('description', 45)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
-        Schema::create('user_roles', function (Blueprint $table) {
+        Schema::create('users_roles', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')
-                ->references('id')->on('users')
-                ->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->integer('role_id')->unsigned();
-            $table->foreign('role_id')->references('id')->on('roles');
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('role_id')->constrained('roles');
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create('permissions', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
-            $table->string('slug', 45);
             $table->string('description', 255)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
 
-        Schema::create('role_permissions', function (Blueprint $table) {
+        Schema::create('roles_permissions', function (Blueprint $table) {
             $table->id();
-            $table->integer('permission_id')->unsigned();
-            $table->foreign('permission_id')
-                ->references('id')->on('permissions')
-                ->onDelete('cascade');
-            $table->integer('role_id')->unsigned();
-            $table->foreign('role_id')
-                ->references('id')->on('roles')
-                ->onDelete('cascade');
+            $table->foreignId('role_id')->constrained('roles');
+            $table->foreignId('permission_id')->constrained('permissions');            
             $table->timestamps();
+            $table->softDeletes();
         });
 
     }
@@ -68,9 +54,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('roles');
-        Schema::dropIfExists('user_roles');
+        Schema::dropIfExists('users_roles');
+        Schema::dropIfExists('roles_permissions');
+        Schema::dropIfExists('roles');   
         Schema::dropIfExists('permissions');
-        Schema::dropIfExists('role_permissions');
     }
 };

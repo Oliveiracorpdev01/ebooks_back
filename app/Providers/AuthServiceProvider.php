@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Permission;
+use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -25,6 +27,17 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Gate::define('update-post', function (User $user, $route_name) {
+            $permissions = Permission::with('roles')->get();
+            foreach ($permissions as $permission) {
+                foreach ($user->roles as $role) {
+                    if ($role->permissions->contains('name', $route_name)) {
+                        return true;
+                    }                    
+                }
+                return false;
+            }
+        });
+
     }
 }
