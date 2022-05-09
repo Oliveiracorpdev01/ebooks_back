@@ -4,8 +4,13 @@ namespace App\Providers;
 
 use App\Models\Permission;
 use App\Models\User;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -33,11 +38,13 @@ class AuthServiceProvider extends ServiceProvider
                 foreach ($user->roles as $role) {
                     if ($role->permissions->contains('name', $route_name)) {
                         return true;
-                    }                    
+                    }
                 }
                 return false;
             }
         });
+
+   
 
     }
 }

@@ -24,6 +24,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'fullName',
         'username',
         'email',
+        'email_verified_at',
         'password',
         'avatar',
         'role',
@@ -53,5 +54,6 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Role::class, 'users_roles');
     }
 
-   
+    
+  
 }
