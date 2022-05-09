@@ -31,7 +31,7 @@ class UserLoginEmail extends Mailable implements ShouldQueue
     {
 
         return $this
-            ->subject('Acaba de fazer o login em sua conta eBooks!')
+            ->subject('Acabou de fazer o login em sua conta eBooks!')
             //->replyTo('adm@oliveiracorp.com.br')
             ->view('email.AlertLogin')->with(['user' => $this->user]);
     }

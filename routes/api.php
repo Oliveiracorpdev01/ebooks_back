@@ -13,6 +13,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', [AuthController::class, 'profile']) /* ->middleware(['verified']) //verificando se o email esta verificado*/;
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::patch('/profile', [AuthController::class, 'profile_update']);
+    
+
+
     Route::get('/teste', [AbilitiesController::class, 'index']);
 
     Route::post('/email/verification-notification',

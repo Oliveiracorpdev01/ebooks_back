@@ -4,10 +4,11 @@ namespace App\Mail;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class UserRegisteredEmail extends Mailable
+class UserRegisteredEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
     private $user;
@@ -31,7 +32,7 @@ class UserRegisteredEmail extends Mailable
      */
     public function build()
     {
-        
+
         return $this
             ->subject('Conclua a configuração da sua nova Conta do Ebooks!')
             //->replyTo('adm@oliveiracorp.com.br')

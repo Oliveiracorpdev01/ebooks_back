@@ -8,7 +8,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-
 class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -51,7 +50,13 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Role::class, 'users_roles');
     }
-
     
-  
+    public static function User_Email_Equals($id, $email)
+    {
+        $user = User::where('email', $email)
+            ->where('id', '<>', $id)
+            ->get();
+        return $user;
+    }
+
 }
