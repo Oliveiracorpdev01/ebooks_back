@@ -2,26 +2,23 @@
 
 namespace App\Mail;
 
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class UserRegisteredEmail extends Mailable
+class UserLoginEmail extends Mailable
 {
     use Queueable, SerializesModels;
     private $user;
-    private $url;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(User $user, $url)
+    public function __construct($user)
     {
         $this->user = $user;
-        $this->url = $url;
     }
 
     /**
@@ -31,10 +28,10 @@ class UserRegisteredEmail extends Mailable
      */
     public function build()
     {
-        
+
         return $this
-            ->subject('Conclua a configuração da sua nova Conta do Ebooks!')
+            ->subject('Acaba de fazer o login em sua conta eBooks!')
             //->replyTo('adm@oliveiracorp.com.br')
-            ->view('email.Registered')->with(['user' => $this->user, 'url' => $this->url]);
+            ->view('email.AlertLogin')->with(['user' => $this->user]);
     }
 }

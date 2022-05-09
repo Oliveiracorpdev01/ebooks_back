@@ -2,15 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\UserRegisteredEmail;
 use App\Models\User;
 use App\Models\UsersRole;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
+
+//envio de email
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
+use App\Mail\UserRegisteredEmail;
+use App\Mail\UserLoginEmail;
 
 class AuthController extends Controller
 {
@@ -37,8 +43,20 @@ class AuthController extends Controller
 
         $user->roles = UsersRole::innerjoinUsersPermissions($user->id);
 
+        $frontendUrl = 'http://cool-app.com/auth/email/verify';
+
+        $verifyUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
+            [
+                'id' => $user->getKey(),
+                'hash' => sha1($user->getEmailForVerification()),
+            ]
+        );
+       
+
         Mail::to($validatedData['email'])->send(
-            new UserRegisteredEmail($user)
+            new UserRegisteredEmail($user, $verifyUrl)
         );
 
         return response()->json([
@@ -69,6 +87,10 @@ class AuthController extends Controller
         $user->roles = UsersRole::innerjoinUsersPermissions($user->id);
 
         $user->createToken($request->device_name);
+
+        Mail::to($request->email)->send(
+            new UserLoginEmail($user->fullName)
+        );
 
         return response()->json([
             'users' => $user,
