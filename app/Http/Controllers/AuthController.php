@@ -18,6 +18,9 @@ use Illuminate\Validation\ValidationException;
 use App\Mail\UserRegisteredEmail;
 use App\Mail\UserLoginEmail;
 
+
+//teste notificação
+
 class AuthController extends Controller
 {
 
@@ -88,7 +91,7 @@ class AuthController extends Controller
 
         $user->createToken($request->device_name);
 
-        Mail::to($request->email)->send(
+        Mail::to($request->email)->queue(
             new UserLoginEmail($user->fullName)
         );
 
