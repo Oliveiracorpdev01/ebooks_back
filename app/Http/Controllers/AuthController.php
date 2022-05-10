@@ -142,16 +142,11 @@ class AuthController extends Controller
             'username' => 'string|min:3|max:255|unique:users',
             'current_password' => 'string|min:4|max:80',
             'new_password' => 'string|min:4|max:80',
-            'phone_number' => 'number|min:6|max:20',
+            'phone_number' => 'integer|digits_between:6,20',
         );
         $this->validate($request, $arrValidate);
 
         $user = $request->user();
-
-        $mail = User::User_Email_Equals($request->user()->id, $request['email'], );
-        if (count($mail) > 0) {
-            return abort(409, 'Email já existe em nossa base de dados!');
-        }
 
         //validando apenas o que esta na regra
         $requestEquals = array();

@@ -2,7 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UserLoginEmail;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Validation\ValidationException;
 
 class ChangeEmailController extends Controller
 {
@@ -10,11 +19,8 @@ class ChangeEmailController extends Controller
     public function update(Request $request, $id)
     {
         $arrValidate = array(
-            'fullName' => 'string|regex:/\s/|min:6|max:255',
-            'username' => 'string|min:3|max:255|unique:users',
-            'current_password' => 'string|min:4|max:80',
-            'new_password' => 'string|min:4|max:80',
-            'phone_number'=>'number|min:6|max:20', 
+            'email' => 'required|min:6|max:80|email:rfc',
+            'password' => 'string|min:4|max:80',
         );
         $this->validate($request, $arrValidate);
 
@@ -22,7 +28,9 @@ class ChangeEmailController extends Controller
 
         $mail = User::User_Email_Equals($request->user()->id, $request['email'], );
         if (count($mail) > 0) {
-            return abort(409, 'Email já existe em nossa base de dados!');
+            throw ValidationException::withMessages([
+                'email' => ['Email já existe em nossa base de dados!'],
+            ]);
         }
 
         //validando apenas o que esta na regra
