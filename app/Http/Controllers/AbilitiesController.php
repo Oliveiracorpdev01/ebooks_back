@@ -2,43 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Gate;
-
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\URL;
+use App\Models\PasswordResets;
 use App\Models\User;
-use Illuminate\Http\Request;
 
+//teste
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\URL;
 
 class AbilitiesController extends Controller
 {
-    public function index(Request $request)
+    public function forgot_password(Request $request)
     {
 
-
-        $notifiable = $request->user();
+        //$user = $request->user();
 
         /* $permissions = auth()->user();
 
         if (!Gate::allows('update-post', 'editar_livro')) {
-            return abort(403);
+        return abort(403);
         }  */
+        $request->validate([
+            'email' => 'required|email|exists:users',
+        ]);
 
-        //return $permissions;
+        $user = User::where('email', $request->email)->first();
+        $token = Password::createToken($user);
 
+        dd(Password::tokenExists($user, $token));
 
-        $frontendUrl = 'http://cool-app.com/auth/email/verify';
+        
+        PasswordResets::Delete_PasswordReset();
 
-        $verifyUrl = URL::temporarySignedRoute(
-            'verification.verify',
-            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
-            [
-                'id' => $notifiable->getKey(),
-                'hash' => sha1($notifiable->getEmailForVerification()),
-            ]
-        );
-        //$urlgene = $frontendUrl . '?verify_url=' . urlencode($verifyUrl);
-        dd($verifyUrl);
+        dd(url('reset', $token));
+
     }
 }

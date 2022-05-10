@@ -7,8 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Contracts\Auth\CanResetPassword;
+use Illuminate\Auth\Notifications\ResetPassword;
 
-class User extends Authenticatable implements MustVerifyEmail
+
+class User extends Authenticatable implements MustVerifyEmail, CanResetPassword
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -25,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'avatar',
         'role',
+        'phone_number',
     ];
 
     /**
@@ -58,5 +62,6 @@ class User extends Authenticatable implements MustVerifyEmail
             ->get();
         return $user;
     }
+
 
 }

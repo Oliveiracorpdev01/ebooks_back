@@ -2,10 +2,17 @@
 
 use App\Http\Controllers\AbilitiesController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PasswordResets;
 use App\Http\Controllers\Email_VerificationController;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+//teste
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -14,27 +21,28 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', [AuthController::class, 'profile']) /* ->middleware(['verified']) //verificando se o email esta verificado*/;
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::patch('/profile', [AuthController::class, 'profile_update']);
-    
 
-
-    Route::get('/teste', [AbilitiesController::class, 'index']);
+    Route::post('/teste', [AbilitiesController::class, 'index']);
 
     Route::post('/email/verification-notification',
         [Email_VerificationController::class,
             'sendEmailVerificationNotification'])->middleware(['throttle:6,1']);
 });
 
-//ativando rota de verificaçãod e email
+Route::post('/forgot-password', [PasswordResets::class, 'forgot_password'])->middleware('guest');
 
+Route::post('/reset-password/{token}/{email}',[PasswordResets::class, 'reset_password'])->middleware(['guest'])->name('password.reset');
+
+
+//apenas para gerar um link de email
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
 
-    return 'email verificado';
+    return '';
 })->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
+
 
 Route::any('{any}', function () {
     return response()->json([

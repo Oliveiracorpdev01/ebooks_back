@@ -3,15 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Mail\UserLoginEmail;
-use App\Mail\UserRegisteredEmail;
-use App\Mail\UserVerificationEmail;
 use App\Models\User;
 use App\Models\UsersRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-
-//envio de email
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +14,6 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
 
-//teste notificação
 
 class AuthController extends Controller
 {
@@ -28,17 +22,19 @@ class AuthController extends Controller
     {
         $validatedData = $request->validate([
             'terms' => 'required|boolean|in:1',
-            'fullName' => 'required|regex:/\s/|string|min:6|max:255',
+            'fullName' => 'required|string|min:6|max:255',
+            'username' => 'required|string|min:4|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'device_name' => 'required',            
+            'password' => 'required|string|min:4|max:80',
+            'device_name' => 'required',
+
         ]);
 
-        $username = explode(' ', $validatedData['fullName'])[0];
+        //$username = explode(' ', $validatedData['fullName'])[0];
         $user = User::create([
             'fullName' => $validatedData['fullName'],
             'email' => $validatedData['email'],
-            'username' => $username,
+            'username' => $validatedData['username'],
             'password' => Hash::make($validatedData['password']),
         ]);
         UsersRole::create([
@@ -47,8 +43,6 @@ class AuthController extends Controller
         ]);
 
         $user->roles = UsersRole::innerjoinUsersPermissions($user->id);
-
-        $frontendUrl = 'http://cool-app.com/auth/email/verify';
 
         $verifyUrl = URL::temporarySignedRoute(
             'verification.verify',
@@ -59,8 +53,10 @@ class AuthController extends Controller
             ]
         );
 
+        $urlv = getenv('APP_FRONT_URL') . '' . explode('/api', $verifyUrl)[1];
+
         Mail::to($validatedData['email'])->queue(
-            new UserRegisteredEmail($user, $verifyUrl)
+            new UserRegisteredEmail($user, $urlv)
         );
 
         return response()->json([
@@ -143,8 +139,10 @@ class AuthController extends Controller
         $arrValidate = array(
             'fullName' => 'string|regex:/\s/|min:6|max:255',
             'email' => 'string|email:rfc,dns|max:255',
-            'username' => 'string|min:3|max:255',
-            'password' => 'string|min:4|max:80',
+            'username' => 'string|min:3|max:255|unique:users',
+            'current_password' => 'string|min:4|max:80',
+            'new_password' => 'string|min:4|max:80',
+            'phone_number' => 'number|min:6|max:20',
         );
         $this->validate($request, $arrValidate);
 
@@ -163,26 +161,14 @@ class AuthController extends Controller
             }
         }
 
-        if ($request['password']) {
-            $requestEquals['password'] = Hash::make($request['password']);
-        }
+        if ($request['current_password']) {
 
-        if ($request['email'] && $request['email'] != $user->email) {
-            $requestEquals['email_verified_at'] = null;
-            $frontendUrl = 'http://cool-app.com/auth/email/verify';
-
-            $verifyUrl = URL::temporarySignedRoute(
-                'verification.verify',
-                Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
-                [
-                    'id' => $user->getKey(),
-                    'hash' => sha1($user->getEmailForVerification()),
-                ]
-            );
-
-            Mail::to($request['email'])->queue(
-                new UserVerificationEmail($user, $verifyUrl)
-            );
+            if (!$user || !Hash::check($request['current_password'], $user->password)) {
+                throw ValidationException::withMessages([
+                    'email' => ['As credenciais fornecidas estão incorretas.'],
+                ]);
+            }
+            $requestEquals['password'] = Hash::make($request['new_password']);
         }
 
         $user->update($requestEquals);

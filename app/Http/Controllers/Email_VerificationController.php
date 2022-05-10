@@ -16,8 +16,6 @@ class Email_VerificationController extends Controller
 
         $user = $request->user();
 
-        $frontendUrl = 'http://cool-app.com/auth/email/verify';
-
         $verifyUrl = URL::temporarySignedRoute(
             'verification.verify',
             Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
@@ -26,15 +24,14 @@ class Email_VerificationController extends Controller
                 'hash' => sha1($user->getEmailForVerification()),
             ]
         );
-        //$urlgene = $frontendUrl . '?verify_url=' . urlencode($verifyUrl);
 
-        Mail::to($user['email'])->send(
+        $verifyUrl = getenv('APP_FRONT_URL') . '' . explode('/api', $verifyUrl)[1];
+
+        Mail::to($user['email'])->queue(
             new UserVerificationEmail($user, $verifyUrl)
         );
 
-        return response()->json([
-            'message' => 'ok'
-        ]);
+        return response()->json();
 
     }
 }
