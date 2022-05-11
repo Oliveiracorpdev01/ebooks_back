@@ -32,10 +32,13 @@ class UserRegisteredEmail extends Mailable implements ShouldQueue
      */
     public function build()
     {
+        $name = $this->user->fullName;
+        if (preg_match('/\s/', $name)) { //teste se contém espaço
+            $name = ucwords(strtok($this->user->fullName, " "));
+        }
 
         return $this
-            ->subject('Conclua a configuração da sua nova Conta do Ebooks!')
-            //->replyTo('adm@oliveiracorp.com.br')
+            ->subject('' . $name . ', vamos confirmar seu e-mail de cadastro?')
             ->view('email.Registered')->with(['user' => $this->user, 'url' => $this->url]);
     }
 }

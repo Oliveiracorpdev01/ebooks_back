@@ -2,18 +2,12 @@
 
 use App\Http\Controllers\AbilitiesController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PasswordResets;
-use App\Http\Controllers\Email_VerificationController;
 use App\Http\Controllers\ChangeEmailController;
-use Illuminate\Auth\Events\PasswordReset;
+use App\Http\Controllers\Email_VerificationController;
+use App\Http\Controllers\PasswordResets;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
 //teste
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -24,8 +18,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::patch('/profile', [AuthController::class, 'profile_update']);
     Route::patch('/profile/email', [ChangeEmailController::class, 'update']);
 
-    
-
     Route::post('/teste', [AbilitiesController::class, 'index']);
 
     Route::post('/email/verification-notification',
@@ -33,20 +25,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             'sendEmailVerificationNotification'])->middleware(['throttle:6,1']);
 });
 
-Route::post('/forgot-password', [PasswordResets::class, 'forgot_password'])->middleware('guest');
+Route::group(['middleware' => ['guest']], function () {
+Route::post('/forgot-password', [PasswordResets::class, 'forgot_password']);
+Route::post('/reset-password/{token}/{email}', [PasswordResets::class, 'reset_password'])->name('password.reset');
+});
 
-Route::post('/reset-password/{token}/{email}',[PasswordResets::class, 'reset_password'])->middleware(['guest'])->name('password.reset');
-
-
-//apenas para gerar um link de email
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-
     return '';
 })->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
-
-
-
 
 Route::any('{any}', function () {
     return response()->json([

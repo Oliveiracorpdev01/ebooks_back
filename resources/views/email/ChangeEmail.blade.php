@@ -32,7 +32,7 @@
 
 										<h3>Olá, {{$user->fullName}},<br>
 											O endereço de e-mail associado à sua conta foi recentemente {{date('d/m/Y H:i:s')}} alterado para
-											oliveiracorp.dev01@gmail.com.<br>
+											{{$user->email}}.<br>
 											Se você não fez essa alteração e acredita se tratar de um erro, acesse nossa
 											central de ajuda, onde você poderá entrar em contato com nossa equipe de
 											suporte.<br>

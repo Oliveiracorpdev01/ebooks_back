@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UserChangeEmail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -10,7 +11,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
-use App\Mail\UserChangeEmail;
 
 class ChangeEmailController extends Controller
 {
@@ -42,8 +42,13 @@ class ChangeEmailController extends Controller
             ]);
         }
 
+       
+
         if ($request['email'] && $request['email'] != $user->email) {
             $requestEquals['email_verified_at'] = null;
+
+            $email_last = $user->email;
+            $user->email = $request['email'];
 
             $verifyUrl = URL::temporarySignedRoute(
                 'verification.verify',
@@ -53,12 +58,13 @@ class ChangeEmailController extends Controller
                     'hash' => sha1($user->getEmailForVerification()),
                 ]
             );
+           
             $urlv = getenv('APP_FRONT_URL') . '' . explode('/api', $verifyUrl)[1];
-            Mail::to($request['email'])
-            ->cc([$user->email])
-            ->queue(
-                new UserChangeEmail($user, $urlv)
-            );
+            Mail::to($user->email)
+                ->cc([$email_last])
+                ->queue(
+                    new UserChangeEmail($user, $urlv)
+                );
         }
 
         $user->update($requestEquals);

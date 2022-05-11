@@ -31,10 +31,10 @@ class AuthController extends Controller
             'device_name' => 'required',
 
         ]);
-
+        
         //$username = explode(' ', $validatedData['fullName'])[0];
         $user = User::create([
-            'fullName' => $validatedData['fullName'],
+            'fullName' =>  ucwords($validatedData['fullName']),
             'email' => $validatedData['email'],
             'username' => $validatedData['username'],
             'password' => Hash::make($validatedData['password']),
