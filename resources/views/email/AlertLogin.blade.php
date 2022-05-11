@@ -30,22 +30,11 @@
 								<td>
 									<div class="text" style="padding: 0 2.5em;">
 
-										<h3>Olá, {{$user}},<br>seu login acaba de ser efetuado em nosso site, {{date('d/m/Y H:i:s')}}.<br>
+										<h3>Olá, ,<br>seu login acaba de ser efetuado em nosso site, {{date('d/m/Y H:i:s')}}.<br>
 											Se você não fez login e acredita se tratar de um erro, acesse seu perfil e altere sua senha para mais segurança, ou  você poderá entrar em contato com nossa equipe de suporte.<br></h3>
 
 									</div>
-									<div class="text" style="padding: 0 2.5em; text-align: center;">
-
-										<p><a href="#"  style="
-                                        padding: 10px 15px;
-                                        display: inline-block;
-                                        border-radius: 5px;
-                                        background: #30e3ca;
-                                        color: #ffffff;
-                                       border: 1px solid #fff;
-                                       text-decoration: none;
-                                ">Alterar senha</a></p>
-									</div>
+						
 								</td>
 							</tr>
 						</table>

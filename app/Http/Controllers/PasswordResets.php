@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class PasswordResets extends Controller
 {
@@ -27,7 +28,6 @@ class PasswordResets extends Controller
 
         $verifyUrl = URL::signedRoute(
             'password.reset',
-
             [
                 'token' => $token,
                 'email' => $request->email,
@@ -58,18 +58,23 @@ class PasswordResets extends Controller
         $user = User::where('email', $request->email)->first();
         $updatePassword = Password::tokenExists($user, $request['token']);
 
-        if (!$updatePassword && !$request->hasValidSignature()) {
-            abort(401);
+        if (!$updatePassword || !$request->hasValidSignature()) {
+            throw ValidationException::withMessages([
+                'signature' => [trans('messages.signature_invalid')],
+            ]);
         }
 
+        if (!$user || Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'credentials' => [trans('messages.password_last_equals')],
+            ]);
+        }
+       
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                ])->setRememberToken(Str::random(60));
-
+        
+                $user->password = Hash::make($password);
                 $user->save();
                 Password::deleteToken($user);
                 event(new PasswordReset($user));

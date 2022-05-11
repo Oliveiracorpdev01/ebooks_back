@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Mail\UserLoginEmail;
-
 use App\Mail\UserRegisteredEmail;
 use App\Models\User;
 use App\Models\UsersRole;
@@ -15,7 +14,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
-
 
 class AuthController extends Controller
 {
@@ -31,10 +29,10 @@ class AuthController extends Controller
             'device_name' => 'required',
 
         ]);
-        
+
         //$username = explode(' ', $validatedData['fullName'])[0];
         $user = User::create([
-            'fullName' =>  ucwords($validatedData['fullName']),
+            'fullName' => ucwords($validatedData['fullName']),
             'email' => $validatedData['email'],
             'username' => $validatedData['username'],
             'password' => Hash::make($validatedData['password']),
@@ -84,7 +82,6 @@ class AuthController extends Controller
             throw ValidationException::withMessages([
                 'credentials' => [trans('messages.credentials')],
             ]);
-            
         }
 
         $user->roles = UsersRole::innerjoinUsersPermissions($user->id);
@@ -164,7 +161,12 @@ class AuthController extends Controller
             if (!$user || !Hash::check($request['current_password'], $user->password)) {
                 throw ValidationException::withMessages([
                     'current_password' => [trans('messages.current_password')],
-                ]);              
+                ]);
+            }
+            if (!$user || Hash::check($request->new_password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'credentials' => [trans('messages.password_last_equals')],
+                ]);
             }
             $requestEquals['password'] = Hash::make($request['new_password']);
         }
