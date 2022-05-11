@@ -4,6 +4,7 @@ use App\Http\Controllers\AbilitiesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PasswordResets;
 use App\Http\Controllers\Email_VerificationController;
+use App\Http\Controllers\ChangeEmailController;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -21,6 +22,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', [AuthController::class, 'profile']) /* ->middleware(['verified']) //verificando se o email esta verificado*/;
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::patch('/profile', [AuthController::class, 'profile_update']);
+    Route::patch('/profile/email', [ChangeEmailController::class, 'update']);
+
+    
 
     Route::post('/teste', [AbilitiesController::class, 'index']);
 

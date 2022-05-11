@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Mail\UserLoginEmail;
+
+use App\Mail\UserRegisteredEmail;
 use App\Models\User;
 use App\Models\UsersRole;
 use Illuminate\Http\Request;

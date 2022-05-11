@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\UserLoginEmail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
+use App\Mail\UserChangeEmail;
 
 class ChangeEmailController extends Controller
 {
-  
-    public function update(Request $request, $id)
+
+    public function update(Request $request)
     {
         $arrValidate = array(
             'email' => 'required|min:6|max:80|email:rfc',
@@ -35,20 +34,12 @@ class ChangeEmailController extends Controller
 
         //validando apenas o que esta na regra
         $requestEquals = array();
-        foreach ($request->all() as $input => $value) {
-            if (array_key_exists($input, $arrValidate)) {
-                $requestEquals[$input] = $value;
-            }
-        }
+        $requestEquals['email'] = $request['email'];
 
-        if ($request['current_password']) {
-            
-            if (!$user || !Hash::check($request['current_password'], $user->password)) {
-                throw ValidationException::withMessages([
-                    'login' => ['As credenciais fornecidas estão incorretas.'],
-                ]);
-            }
-             $requestEquals['password'] = Hash::make($request['new_password']);
+        if (!$user || !Hash::check($request['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'login' => ['As credenciais fornecidas estão incorretas.'],
+            ]);
         }
 
         if ($request['email'] && $request['email'] != $user->email) {
@@ -62,9 +53,11 @@ class ChangeEmailController extends Controller
                     'hash' => sha1($user->getEmailForVerification()),
                 ]
             );
-
-            Mail::to($request['email'])->queue(
-                new UserVerificationEmail($user, $verifyUrl)
+            $urlv = getenv('APP_FRONT_URL') . '' . explode('/api', $verifyUrl)[1];
+            Mail::to($request['email'])
+            ->cc([$user->email])
+            ->queue(
+                new UserChangeEmail($user, $urlv)
             );
         }
 
@@ -76,5 +69,4 @@ class ChangeEmailController extends Controller
         );
     }
 
-  
 }

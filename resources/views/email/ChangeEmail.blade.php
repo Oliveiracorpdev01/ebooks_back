@@ -1,4 +1,4 @@
-<center style="width: 100%; background-color: #f1f1f1;">
+	<center style="width: 100%; background-color: #f1f1f1;">
 		<div
 			style="display: none; font-size: 1px;max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
 			&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
@@ -30,11 +30,18 @@
 								<td>
 									<div class="text" style="padding: 0 2.5em;">
 
-										<h3>Olá, {{$user->fullName}},<br>seu cadastro foi efetuado com sucesso em nosso site, {{date('d/m/Y H:i:s')}}.<br>
-                                        Confirme seu email para ter acesso completo a nosso portal.<br></h3>
+										<h3>Olá, {{$user->fullName}},<br>
+											O endereço de e-mail associado à sua conta foi recentemente {{date('d/m/Y H:i:s')}} alterado para
+											oliveiracorp.dev01@gmail.com.<br>
+											Se você não fez essa alteração e acredita se tratar de um erro, acesse nossa
+											central de ajuda, onde você poderá entrar em contato com nossa equipe de
+											suporte.<br>
+											Se você é um cliente de eBooks.com e acredita que essa alteração é um erro,
+											consulte este artigo de suporte. Caso contrario confirme o email clicando no botão.<br></h3>
 
 									</div>
 									<div class="text" style="padding: 0 2.5em; text-align: center;">
+
 
 										<p><a href="{{$url}}"  style="
                                         padding: 10px 15px;
@@ -44,7 +51,7 @@
                                         color: #ffffff;
                                        border: 1px solid #fff;
                                        text-decoration: none;
-                                ">Confirmar eMail</a></p>
+                                ">Confirmar Email</a></p>
 									</div>
 								</td>
 							</tr>
