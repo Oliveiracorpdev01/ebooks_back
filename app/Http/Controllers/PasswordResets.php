@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UserForgotPasswordEmail;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Http\Request;
 //
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -31,7 +33,13 @@ class PasswordResets extends Controller
                 'email' => $request->email,
             ]
         );
-        dd($verifyUrl, $token);
+        $urlv = getenv('APP_FRONT_URL') . '' . explode('/api', $verifyUrl)[1];
+
+        Mail::to($request->email)->queue( //queue para enviar em segundo plano e continuar o processo.
+            new UserForgotPasswordEmail($user, $urlv)
+        );
+
+        return '';
 
     }
 

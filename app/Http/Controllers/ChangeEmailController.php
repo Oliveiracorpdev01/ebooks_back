@@ -28,7 +28,7 @@ class ChangeEmailController extends Controller
         $mail = User::User_Email_Equals($request->user()->id, $request['email'], );
         if (count($mail) > 0) {
             throw ValidationException::withMessages([
-                'email' => ['Email já existe em nossa base de dados!'],
+                'email' => [trans('messages.email_exists')],                
             ]);
         }
 
@@ -38,7 +38,7 @@ class ChangeEmailController extends Controller
 
         if (!$user || !Hash::check($request['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'login' => ['As credenciais fornecidas estão incorretas.'],
+                'login' => [trans('messages.credentials')],
             ]);
         }
 

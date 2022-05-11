@@ -82,8 +82,9 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['As credenciais fornecidas estão incorretas.'],
+                'credentials' => [trans('messages.credentials')],
             ]);
+            
         }
 
         $user->roles = UsersRole::innerjoinUsersPermissions($user->id);
@@ -162,8 +163,8 @@ class AuthController extends Controller
 
             if (!$user || !Hash::check($request['current_password'], $user->password)) {
                 throw ValidationException::withMessages([
-                    'email' => ['As credenciais fornecidas estão incorretas.'],
-                ]);
+                    'current_password' => [trans('messages.current_password')],
+                ]);              
             }
             $requestEquals['password'] = Hash::make($request['new_password']);
         }

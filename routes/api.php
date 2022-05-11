@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AbilitiesController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChangeEmailController;
 use App\Http\Controllers\Email_VerificationController;
@@ -18,7 +18,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::patch('/profile', [AuthController::class, 'profile_update']);
     Route::patch('/profile/email', [ChangeEmailController::class, 'update']);
 
-    Route::post('/teste', [AbilitiesController::class, 'index']);
+    Route::get('/teste', [TestController::class, 'test']);
 
     Route::post('/email/verification-notification',
         [Email_VerificationController::class,
