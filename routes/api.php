@@ -24,9 +24,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', [ProfileController::class, 'profile']) /* ->middleware(['verified']) //verificando se o email esta verificado*/;
     Route::patch('/profile', [ProfileController::class, 'profile_update']);
     Route::patch('/profile/email', [ProfileChangeMailController::class, 'update']);
-    Route::post('/profile/image', [ProfileImageController::class, 'updateAccountImage'])->name('account.me');
+    Route::post('/profile/image', [ProfileImageController::class, 'updateAccountImage']);
 
-    Route::get('/teste', [TestController::class, 'test']);
+    Route::post('/teste', [TestController::class, 'test']);
 
     Route::post('/email/verification-notification',
         [VerificationEmailController::class,
