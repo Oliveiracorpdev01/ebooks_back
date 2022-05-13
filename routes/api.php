@@ -26,7 +26,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::patch('/profile/email', [ProfileChangeMailController::class, 'update']);
     Route::post('/profile/image', [ProfileImageController::class, 'updateAccountImage']);
 
-    Route::post('/teste', [TestController::class, 'test']);
+    Route::get('/teste/{avatar}', [TestController::class, 'test']);
 
     Route::post('/email/verification-notification',
         [VerificationEmailController::class,

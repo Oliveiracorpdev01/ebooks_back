@@ -20,11 +20,13 @@ class ProfileImageController extends Controller
         $user = $request->user();
 
         if ($request->user()->avatar) {
-            Storage::putFileAs(
-                'public', $file, $user->avatar//caso exista a imagem so altera
-            );
+
+            Storage::disk('local')->delete($user->avatar);
+            $user->avatar = $file->store('images/users/' . $user->id, 'local'); //caso não exista
+            $user->update(); //salva no banco o caminho
+
         } else {
-            $user->avatar = $file->store('imagens/users/' . $user->id, 'public'); //caso não exista
+            $user->avatar = $file->store('images/users/' . $user->id, 'local'); //caso não exista
             $user->update(); //salva no banco o caminho
         }
 
