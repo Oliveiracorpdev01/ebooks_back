@@ -2,7 +2,7 @@
 Prezado(a) {{$user->fullName}}.<br>
 Recentemente as {{date('d/m/Y H:i:s')}}, você solicitou a redefinição de senha para seu perfil na eBooks. Para concluir o processo, clique no link abaixo.<br>
 
-@component('mail::button', ['url' => $url, 'color' => 'success'])
+@component('mail::button', ['url' => $url, 'color' => 'violet'])
 Alterar senha
 @endcomponent
 

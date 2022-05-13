@@ -2,7 +2,7 @@
 {{-- Header --}}
 @slot('header')
 @component('mail::header', ['url' => config('app.url')])
-
+<img src="https://oliveiracorp.com.br/img/about_img_1.png" class="logo" alt="eBooks">
 @endcomponent
 @endslot
 
