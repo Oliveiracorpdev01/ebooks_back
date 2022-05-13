@@ -107,7 +107,7 @@ return [
     */
 
     'markdown' => [
-        'theme' => 'default',
+        'theme' => 'oliveiracorp',
 
         'paths' => [
             resource_path('views/vendor/mail'),

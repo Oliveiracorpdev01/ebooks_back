@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Account;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 use App\Mail\UserChangeEmail;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
@@ -12,9 +14,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\ValidationException;
 
-class ChangeEmailController extends Controller
+class ProfileChangeMailController extends Controller
 {
-
     public function update(Request $request)
     {
         $arrValidate = array(
@@ -74,5 +75,4 @@ class ChangeEmailController extends Controller
             200
         );
     }
-
 }

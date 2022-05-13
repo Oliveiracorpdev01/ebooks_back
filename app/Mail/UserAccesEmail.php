@@ -6,8 +6,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\User;
 
-class UserLoginEmail extends Mailable implements ShouldQueue
+class UserAccesEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
     private $user;
@@ -17,9 +18,12 @@ class UserLoginEmail extends Mailable implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($user)
+    public function __construct(User $user)
     {
         $this->user = $user;
+        $this->subject('Acabou de fazer o login em sua conta eBooks!');
+        $this->with(['user' => $this->user]);
+
     }
 
     /**
@@ -29,10 +33,7 @@ class UserLoginEmail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-
-        return $this
-            ->subject('Acabou de fazer o login em sua conta eBooks!')
-            //->replyTo('adm@oliveiracorp.com.br')
-            ->view('email.AlertLogin')->with(['user' => $this->user]);
+        return $this            
+            ->markdown('emails.login.AlertAcces');
     }
 }

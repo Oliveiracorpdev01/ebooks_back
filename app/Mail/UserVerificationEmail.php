@@ -2,11 +2,11 @@
 
 namespace App\Mail;
 
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\User;
 
 class UserVerificationEmail extends Mailable implements ShouldQueue
 {
@@ -23,6 +23,8 @@ class UserVerificationEmail extends Mailable implements ShouldQueue
     {
         $this->user = $user;
         $this->url = $url;
+        $this->subject('Vamos confirmar seu e-mail de cadastro?');
+        $this->with(['user' => $this->user, 'url' => $this->url]);
     }
 
     /**
@@ -32,10 +34,6 @@ class UserVerificationEmail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-        return $this
-        ->subject('Verificar endereço de e-mail!')
-        //->replyTo('adm@oliveiracorp.com.br')
-        ->view('email.Verification')->with(['user'=>$this->user, 'url'=>$this->url]);
-
+        return $this->markdown('emails.account.VerificationAccount');
     }
 }

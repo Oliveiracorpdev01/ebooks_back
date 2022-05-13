@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Account;
 
-use App\Mail\UserForgotPasswordEmail;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+use App\Mail\UserForgotPassword;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
-//
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class PasswordResets extends Controller
+class ProfileResetPassword extends Controller
 {
     public function forgot_password(Request $request)
     {
@@ -36,7 +37,7 @@ class PasswordResets extends Controller
         $urlv = getenv('APP_FRONT_URL') . '' . explode('/api', $verifyUrl)[1];
 
         Mail::to($request->email)->queue( //queue para enviar em segundo plano e continuar o processo.
-            new UserForgotPasswordEmail($user, $urlv)
+            new UserForgotPassword($user, $urlv)
         );
 
         return '';
@@ -80,6 +81,30 @@ class PasswordResets extends Controller
                 event(new PasswordReset($user));
             }
         );
+        return;
+
+    }
+
+    public function reset_password_test(Request $request, $token, $email)
+    {
+
+        $request["token"] = $token;
+        $request["email"] = $email;
+
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email|exists:users',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        $updatePassword = Password::tokenExists($user, $request['token']);
+
+        if (!$user || !$updatePassword || !$request->hasValidSignature()) {
+            throw ValidationException::withMessages([
+                'signature' => [trans('messages.signature_invalid')],
+            ]);
+        }
+      
         return;
 
     }

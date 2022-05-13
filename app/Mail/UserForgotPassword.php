@@ -2,13 +2,13 @@
 
 namespace App\Mail;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
 
-class UserForgotPasswordEmail extends Mailable implements ShouldQueue
+class UserForgotPassword extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
     private $user;
@@ -23,6 +23,8 @@ class UserForgotPasswordEmail extends Mailable implements ShouldQueue
     {
         $this->user = $user;
         $this->url = $url;
+        $this->subject('Como redefinir a senha de seu Ebooks?');
+        $this->with(['user' => $this->user, 'url' => $this->url]);
     }
 
     /**
@@ -30,17 +32,9 @@ class UserForgotPasswordEmail extends Mailable implements ShouldQueue
      *
      * @return $this
      */
+
     public function build()
     {
-
-        $name = $this->user->fullName;
-
-        if (preg_match('/\s/', $name)) { //teste se contém espaço
-            $upperCase = ucfirst($name);
-            $name = explode(' ', $upperCase)[0];
-        }
-        return $this
-            ->subject('Olá ' . $name . '! Como redefinir a senha de seu Ebooks?')
-            ->view('email.ForgotPassword')->with(['user' => $this->user, 'url' => $this->url]);
+        return $this->markdown('emails.account.ForgotPassword');
     }
 }

@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Email;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 use App\Mail\UserVerificationEmail;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 
-class Email_VerificationController extends Controller
+class VerificationEmailController extends Controller
 {
     public function sendEmailVerificationNotification(Request $request)
     {

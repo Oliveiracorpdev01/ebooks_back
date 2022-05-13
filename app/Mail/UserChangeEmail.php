@@ -2,11 +2,11 @@
 
 namespace App\Mail;
 
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\User;
 
 class UserChangeEmail extends Mailable implements ShouldQueue
 {
@@ -23,6 +23,8 @@ class UserChangeEmail extends Mailable implements ShouldQueue
     {
         $this->user = $user;
         $this->url = $url;
+        $this->subject('Seu email de usuário foi alterado!');
+        $this->with(['user' => $this->user, 'url' => $this->url]);
     }
 
     /**
@@ -32,16 +34,6 @@ class UserChangeEmail extends Mailable implements ShouldQueue
      */
     public function build()
     {
-
-        $name = $this->user->fullName;
-
-        if (preg_match('/\s/', $name)) { //teste se contém espaço
-            $upperCase = ucfirst($name);
-            $name = explode(' ', $upperCase)[0];
-        }
-        return $this
-            ->subject('Olá ' . $name . '! Seu email de usuário foi alterado!')
-            ->view('email.ChangeEmail')->with(['user' => $this->user, 'url' => $this->url]);
-
+        return $this->markdown('emails.account.UserChangeEmail');
     }
 }
