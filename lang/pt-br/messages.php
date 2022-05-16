@@ -6,4 +6,5 @@ return ['locale' => 'localização invalida.',
     'email_exists' => 'Email já existe em nossa base de dados!',
     'password_last_equals'=>'Sua nova senha deve ser diferente da senha usada anteriormente.',
     'signature_invalid' => 'Assinatura inválida!' ,
+    'image_exist' => 'A imagem não existe.',
 ];

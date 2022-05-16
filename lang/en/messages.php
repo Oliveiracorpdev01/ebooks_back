@@ -5,5 +5,6 @@ return ['locale' => 'Invalid location.',
     'current_password' => 'Password entered does not match the current password.',
     'email_exists' => 'Email already exists in our database!',
     'password_last_equals' => 'Your new password must be different from the previous password.',
-    'signature_invalid' => 'Signature is invalid!' ,
+    'signature_invalid' => 'Signature is invalid!',
+    'image_exist' => 'The image does not exist.',
 ];

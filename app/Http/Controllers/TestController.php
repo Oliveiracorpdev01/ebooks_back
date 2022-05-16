@@ -4,26 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Image;
 
 class TestController extends Controller
 {
-    public function test(Request $request, $avatar)
+    public function test(Request $request)
     {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
 
-        //$storagePath = storage_path('public/'.$request->user()->avatar);
-        //dd($storagePath);
+        // $file = $request->file('avatar');
 
-        $storagePath = storage_path('app/'.$request->user()->avatar);
+        $user = $request->user();
 
+        // Storage::disk('local')->delete('images/users/' . $user->id . '/' . $user->avatar);
+        //$file_name = $file->store('images/teste/', 'local'); //caso não exista
 
-        return Image::make($storagePath)->response();
+        $classifiedImg = $request->file('avatar');
+        $filename = $classifiedImg->getClientOriginalExtension();
 
+        // Intervention
+        $image = Image::make($classifiedImg)->encode('webp', 90)->save(public_path('uploads/' . $filename . '.webp'));
 
-       // return Storage::getVisibility($request->user()->avatar);
+        dd($image);
 
-        //$visibility = Storage::getVisibility('file.jpg');
-
+        return $user->avatar;
     }
 }

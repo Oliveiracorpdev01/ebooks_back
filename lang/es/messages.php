@@ -6,4 +6,5 @@ return ['locale' => 'Locación inválida.',
     'email_exists' => '¡El correo electrónico ya existe en nuestra base de datos!',
     'password_last_equals'=>'Su nueva contraseña debe ser diferente de la contraseña utilizada anteriormente.',
     'signature_invalid' => '¡Suscripción no válida!' ,
+    'image_exist' => 'La imagen no existe.',
 ];

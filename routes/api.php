@@ -1,17 +1,13 @@
 <?php
 
-use App\Http\Controllers\TestController;
-
 use App\Http\Controllers\Account\ProfileChangeMailController;
-use App\Http\Controllers\Account\ProfileResetPassword;
-use App\Http\Controllers\Account\ProfileImageController;
 use App\Http\Controllers\Account\ProfileController;
-use App\Http\Controllers\Email\VerificationEmailController;
-
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-
+use App\Http\Controllers\Account\ProfileImageController;
+use App\Http\Controllers\Account\ProfileResetPassword;
 use App\Http\Controllers\Auth\AuthController;
-
+use App\Http\Controllers\Email\VerificationEmailController;
+use App\Http\Controllers\TestController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 //teste
 use Illuminate\Support\Facades\Route;
@@ -24,9 +20,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', [ProfileController::class, 'profile']) /* ->middleware(['verified']) //verificando se o email esta verificado*/;
     Route::patch('/profile', [ProfileController::class, 'profile_update']);
     Route::patch('/profile/email', [ProfileChangeMailController::class, 'update']);
-    Route::post('/profile/image', [ProfileImageController::class, 'updateAccountImage']);
-
-    Route::get('/teste/{avatar}', [TestController::class, 'test']);
+    Route::post('/profile/avatar', [ProfileImageController::class, 'updateAccountImage']);
+    Route::post('/teste', [TestController::class, 'test']);
 
     Route::post('/email/verification-notification',
         [VerificationEmailController::class,
@@ -34,9 +29,11 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 Route::group(['middleware' => ['guest']], function () {
-Route::post('/forgot-password', [ProfileResetPassword::class, 'forgot_password']);
-Route::post('/reset-password/{token}/{email}', [ProfileResetPassword::class, 'reset_password'])->name('password.reset');
-Route::get('/reset-password/{token}/{email}', [ProfileResetPassword::class, 'reset_password_test'])->middleware(['signed']);
+    Route::get('/profile/users/{id}/avatar/{avatar}', [ProfileImageController::class, 'indexAccountImage']);
+
+    Route::post('/forgot-password', [ProfileResetPassword::class, 'forgot_password']);
+    Route::post('/reset-password/{token}/{email}', [ProfileResetPassword::class, 'reset_password'])->name('password.reset');
+    Route::get('/reset-password/{token}/{email}', [ProfileResetPassword::class, 'reset_password_test'])->middleware(['signed']);
 
 });
 
