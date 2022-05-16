@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\File;
 use Image;
 
 class ProfileImageController extends Controller
@@ -13,24 +14,24 @@ class ProfileImageController extends Controller
     public function updateAccountImage(Request $request)
     {
         $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'avatar' => 'required|image|mimes:jpeg,png,jpg|max:4048',
         ]);
 
         $file = $request->file('avatar');
 
         $user = $request->user();
+        $filename = substr(md5(date("YmdHis")), 1, 35);
         if ($request->user()->avatar) {
-
             Storage::disk('local')->delete('images/users/' . $user->id . '/' . $user->avatar);
-            $file_name = $file->store('images/users/' . $user->id, 'local'); //caso não exista
-            $user->avatar = explode('/', $file_name)[3];
-            $user->update(); //salva no banco o caminho
-
-        } else {
-            $file_name = $file->store('images/users/' . $user->id, 'local'); //caso não exista
-            $user->avatar = explode('/', $file_name)[3];
-            $user->update(); //salva no banco o caminho
         }
+        $storagePath = storage_path('app/images/users/' . $user->id);
+        if (!is_dir($storagePath)) {
+            File::makeDirectory(storage_path('app/images/users/' . $user->id));
+        }
+
+        Image::make($file)->encode('webp', 90)->save(storage_path('app/images/users/' . $user->id . '/' . $filename . '.webp'));
+        $user->avatar = $filename . '.webp';
+        $user->update(); //salva no banco o caminho
 
         return $user->avatar;
     }
